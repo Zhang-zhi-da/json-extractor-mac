@@ -1,0 +1,6 @@
+# 运行环境依赖（打包与运行都需要）
+pandas>=2.0
+openpyxl>=3.1
+
+# 仅打包时需要
+pyinstaller>=6.3

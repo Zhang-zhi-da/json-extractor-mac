@@ -1,0 +1,49 @@
+name: Build macOS App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]        # Apple Silicon (arm64)
+        # os: [macos-13]          # 需要 Intel 版时再加上这一行（x86_64）
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'   # 3.12 也可；别用 3.14，PyInstaller 尚未适配
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: 打包
+        run: |
+          pyinstaller \
+            --noconfirm --clean \
+            --windowed --onedir \
+            --name "JSON数据提取工具" \
+            --osx-bundle-identifier com.local.jsonextractor \
+            --hidden-import pandas \
+            --hidden-import openpyxl \
+            --collect-submodules openpyxl \
+            json_extractor_ui.py
+
+      - name: 签名并压缩
+        run: |
+          cd dist
+          xattr -cr "JSON数据提取工具.app"
+          codesign --force --deep --sign - "JSON数据提取工具.app"
+          zip -qry "JSON数据提取工具-macOS.zip" "JSON数据提取工具.app"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JSON数据提取工具-macOS
+          path: dist/JSON数据提取工具-macOS.zip
