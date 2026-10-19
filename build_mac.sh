@@ -10,13 +10,13 @@
 #   PYTHON_BIN=python3.11   指定解释器（建议用 python.org 官方 framework 版，Tcl/Tk 最完整）
 #   TARGET_ARCH=arm64       x86_64 / arm64 / universal2，默认跟随当前机器
 #
-# 产物：dist/JSON数据提取工具.app
+# 产物：dist/JSON数据提取工具 2.0.app
 
 set -euo pipefail
 
-APP_NAME="JSON数据提取工具"
-ENTRY="json_extractor_ui.py"
-BUNDLE_ID="com.local.jsonextractor"
+APP_NAME="JSON数据提取工具 2.0"
+ENTRY="json_extractor2.0.py"
+BUNDLE_ID="com.local.jsonextractor2"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 TARGET_ARCH="${TARGET_ARCH:-}"
 
