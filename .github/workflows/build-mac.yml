@@ -29,7 +29,7 @@ jobs:
           pyinstaller \
             --noconfirm --clean \
             --windowed --onedir \
-            --name "JSON数据提取工具 2.0" \
+            --name "JSON数据提取工具2.0" \
             --osx-bundle-identifier com.local.jsonextractor2 \
             --hidden-import pandas \
             --hidden-import openpyxl \
@@ -39,11 +39,11 @@ jobs:
       - name: 签名并压缩
         run: |
           cd dist
-          xattr -cr "JSON数据提取工具 2.0.app"
-          codesign --force --deep --sign - "JSON数据提取工具 2.0.app"
-          zip -qry "JSON数据提取工具 2.0-macOS.zip" "JSON数据提取工具 2.0.app"
+          xattr -cr "JSON数据提取工具2.0.app"
+          codesign --force --deep --sign - "JSON数据提取工具2.0.app"
+          zip -qry "JSON数据提取工具2.0-macOS.zip" "JSON数据提取工具2.0.app"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: JSON数据提取工具 2.0-macOS
-          path: dist/JSON数据提取工具 2.0-macOS.zip
+          name: JSON数据提取工具2.0-macOS
+          path: dist/JSON数据提取工具2.0-macOS.zip
