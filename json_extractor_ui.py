@@ -318,9 +318,36 @@ class JsonExtractorUI:
         
         try:
             self.json_data = json.loads(json_str)
-        except json.JSONDecodeError as e:
-            messagebox.showerror("JSON解析错误", f"JSON格式错误:\n{str(e)}\n\n请检查JSON语法是否正确")
-            return
+        except json.JSONDecodeError:
+            # 兼容"Extra data"场景：粘贴了多段拼接的JSON或末尾带有多余内容
+            try:
+                docs = []
+                decoder = json.JSONDecoder()
+                idx = 0
+                while idx < len(json_str):
+                    while idx < len(json_str) and json_str[idx] in ' \t\r\n,;':
+                        idx += 1
+                    if idx >= len(json_str):
+                        break
+                    obj, idx = decoder.raw_decode(json_str, idx)
+                    docs.append(obj)
+
+                if not docs:
+                    raise json.JSONDecodeError("未找到有效JSON", json_str, 0)
+
+                # 优先取包含 rows 的那段
+                with_rows = [d for d in docs if isinstance(d, dict) and d.get("rows")]
+                self.json_data = with_rows[0] if with_rows else docs[0]
+
+                if len(docs) > 1:
+                    self.status_label.config(
+                        text=f"⚠️ 检测到 {len(docs)} 段拼接的JSON，已解析第 {docs.index(self.json_data)+1} 段"
+                              if self.json_data in docs else f"⚠️ 检测到 {len(docs)} 段拼接的JSON，已解析含rows的一段",
+                        fg=ModernUI.COLORS['warning']
+                    )
+            except json.JSONDecodeError as e:
+                messagebox.showerror("JSON解析错误", f"JSON格式错误:\n{str(e)}\n\n请检查JSON语法是否正确")
+                return
         
         self.parse_and_display()
     
